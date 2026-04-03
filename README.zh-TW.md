@@ -66,7 +66,7 @@ chmod 600 ~/.claude/channels/line/.env
 將內附的模板複製到你的工作目錄。Claude 啟動時會自動讀取它，學會如何作為 LINE bot 運作——包括在重啟後讀取 `history.log` 以恢復對話脈絡。
 
 ```sh
-cp ~/.claude/plugins/cache/claude-line-channel/line/0.1.0/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
+cp ~/.claude/plugins/cache/claude-line-channel/line/*/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
 ```
 
 可依需求自訂（角色設定、語言、規則等）。

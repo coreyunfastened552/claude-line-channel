@@ -66,7 +66,7 @@ Verify in the LINE Developers Console — the webhook should return HTTP 200.
 Copy the included template to your working directory. Claude will read it on startup and know how to behave as a LINE bot — including reading `history.log` for context after restarts.
 
 ```sh
-cp ~/.claude/plugins/cache/claude-line-channel/line/0.1.0/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
+cp ~/.claude/plugins/cache/claude-line-channel/line/*/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
 ```
 
 Customize it to fit your use case (persona, language, rules, etc.).
