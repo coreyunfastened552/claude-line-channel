@@ -61,15 +61,26 @@ chmod 600 ~/.claude/channels/line/.env
 
 在 LINE Developers Console 驗證 webhook — 應回傳 HTTP 200。
 
-**5. 以 channel 旗標重新啟動。**
+**5. 建立 session CLAUDE.md（建議）。**
+
+將內附的模板複製到你的工作目錄。Claude 啟動時會自動讀取它，學會如何作為 LINE bot 運作——包括在重啟後讀取 `history.log` 以恢復對話脈絡。
+
+```sh
+cp ~/.claude/plugins/cache/claude-line-channel/line/0.1.0/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
+```
+
+可依需求自訂（角色設定、語言、規則等）。
+
+**6. 以 channel 旗標重新啟動。**
 
 沒有這個旗標 server 不會連線 — 請退出目前 session 並重新開啟：
 
 ```sh
+cd ~/my-line-bot
 claude --dangerously-load-development-channels server:line
 ```
 
-**6. 允許你的 LINE 用戶 ID。**
+**7. 允許你的 LINE 用戶 ID。**
 
 建立 `~/.claude/channels/line/access.json`：
 
@@ -82,6 +93,8 @@ claude --dangerously-load-development-channels server:line
 ```
 
 如何找到你的 LINE 用戶 ID：將機器人加為好友後傳任一訊息，查看 `~/.claude/channels/line/unknown-groups.log` — 你的用戶 ID 會在第一次傳訊時出現。將它加入 `allowFrom` 後再傳一次訊息即可。
+
+> 步驟 5–7 假設你在一個專用目錄（`~/my-line-bot/`）執行 Claude。該目錄下的 `CLAUDE.md` 會在 session 啟動時自動載入。
 
 ## 存取控制
 

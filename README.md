@@ -61,15 +61,26 @@ Point your LINE channel's webhook URL at `https://your-server/webhook`. Use ngin
 
 Verify in the LINE Developers Console — the webhook should return HTTP 200.
 
-**5. Relaunch with the channel flag.**
+**5. Set up a session CLAUDE.md (recommended).**
+
+Copy the included template to your working directory. Claude will read it on startup and know how to behave as a LINE bot — including reading `history.log` for context after restarts.
+
+```sh
+cp ~/.claude/plugins/cache/claude-line-channel/line/0.1.0/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
+```
+
+Customize it to fit your use case (persona, language, rules, etc.).
+
+**6. Relaunch with the channel flag.**
 
 The server won't connect without this — exit your session and start a new one:
 
 ```sh
+cd ~/my-line-bot
 claude --dangerously-load-development-channels server:line
 ```
 
-**6. Allow your LINE user ID.**
+**7. Allow your LINE user ID.**
 
 Create `~/.claude/channels/line/access.json`:
 
@@ -82,6 +93,8 @@ Create `~/.claude/channels/line/access.json`:
 ```
 
 To find your LINE user ID: add the bot as a friend and send it any message. Check `~/.claude/channels/line/unknown-groups.log` — your user ID appears there on first contact. Add it to `allowFrom` and message again.
+
+> Steps 5–7 assume you run Claude from a dedicated directory (`~/my-line-bot/`). The `CLAUDE.md` in that directory is loaded automatically on session start.
 
 ## Access control
 
