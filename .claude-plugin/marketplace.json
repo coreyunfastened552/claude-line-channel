@@ -1,7 +1,7 @@
 {
   "name": "claude-line-channel",
-  "description": "LINE Messaging API channel plugin for Claude Code",
   "owner": { "name": "NYCU-Chung" },
+  "metadata": { "description": "LINE Messaging API channel plugin for Claude Code" },
   "plugins": [
     {
       "name": "line",
