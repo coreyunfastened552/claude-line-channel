@@ -14,14 +14,18 @@
 ## 快速設定
 > 單人私訊設定。群組和多人設定請見 [ACCESS.md](./ACCESS.md)。
 
-**1. 建立 LINE Messaging API 頻道。**
+**1. 建立 LINE 官方帳號並開啟 Messaging API。**
 
-前往 [LINE Developers Console](https://developers.line.biz/) → 建立 Provider → 建立 **Messaging API** 頻道。
+自 2024 年 9 月起，Messaging API 頻道無法再直接從 LINE Developers Console 建立，新流程如下：
 
-在頻道設定頁面：
-- **Messaging API** 分頁 → 複製 **Channel secret**
-- **Messaging API** 分頁 → 發行 **Channel access token（長期）** 並複製
-- 關閉 **Auto-reply messages** — 由 Claude 負責回覆
+1. 登入 [LINE Official Account Manager](https://manager.line.biz/)，建立一個 LINE 官方帳號。
+2. 進入帳號設定，找到 **Messaging API** 並點選「啟用」。系統會要求選擇或建立 Provider。
+3. 開啟 [LINE Developers Console](https://developers.line.biz/console/)，在你的 Provider 下找到自動建立好的頻道。
+
+在 LINE Developers Console 的頻道頁面：
+- **Basic settings** 分頁 → 複製 **Channel secret**
+- **Messaging API** 分頁 → 點選「Issue」產生 **Channel access token（長期）** 並複製
+- 回到 LINE Official Account Manager → **自動回應訊息** → 關閉**自動回應** — 由 Claude 負責回覆
 
 **2. 安裝 plugin。**
 

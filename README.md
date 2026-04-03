@@ -14,14 +14,18 @@ When someone messages the bot, the MCP server forwards the message to Claude and
 ## Quick Setup
 > Single-user DM setup. See [ACCESS.md](./ACCESS.md) for groups and multi-user setups.
 
-**1. Create a LINE Messaging API channel.**
+**1. Create a LINE Official Account and enable Messaging API.**
 
-Go to the [LINE Developers Console](https://developers.line.biz/) → Create a provider → Create a **Messaging API** channel.
+As of September 2024, Messaging API channels can no longer be created directly from the LINE Developers Console. The new flow:
 
-On the channel page:
-- **Messaging API** tab → copy the **Channel secret**
-- **Messaging API** tab → issue a **Channel access token (long-lived)** and copy it
-- Turn off **Auto-reply messages** — Claude will handle replies
+1. Sign in to [LINE Official Account Manager](https://manager.line.biz/) and create a LINE Official Account.
+2. In the account settings, find **Messaging API** and click **Enable**. Select or create a Provider when prompted.
+3. Open [LINE Developers Console](https://developers.line.biz/console/) and navigate to the channel that was automatically created under your Provider.
+
+On the channel page in LINE Developers Console:
+- **Basic settings** tab → copy the **Channel secret**
+- **Messaging API** tab → click **Issue** to generate a **Channel access token (long-lived)** and copy it
+- In LINE Official Account Manager → **Auto-response messages** → turn off **Auto-reply messages** — Claude will handle replies
 
 **2. Install the plugin.**
 
