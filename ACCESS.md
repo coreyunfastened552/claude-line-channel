@@ -1,5 +1,7 @@
 # LINE Channel — Access & Delivery
 
+[繁體中文](./ACCESS.zh-TW.md) | English
+
 The LINE channel runs a webhook server that receives messages from LINE and forwards them to Claude Code. All access control lives in `~/.claude/channels/line/access.json` (or `$LINE_STATE_DIR/access.json`). The file is re-read on every inbound message, so changes take effect immediately without a restart.
 
 ## Quick reference
