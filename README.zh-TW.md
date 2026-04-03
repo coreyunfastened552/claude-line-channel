@@ -188,6 +188,12 @@ LINE_CHANNEL_SECRET=<secret> bun examples/line-router.ts
 
 實際運行後發現的注意事項：
 
+- **`claude plugin install` 會用 SSH clone GitHub — 若沒有 SSH key 請先設定 HTTPS。**
+  這個問題影響所有未設定 GitHub SSH key 的環境（包括全新的 VPS）。會出現 `Permission denied (publickey)` 或 `Host key verification failed`。在執行 `plugin install` 前先執行這行：
+  ```bash
+  git config --global url."https://github.com/".insteadOf "git@github.com:"
+  ```
+
 - **LINE 每個頻道只允許一個 webhook URL。** 若要讓多個 Claude Code session 共用同一個 LINE 頻道（例如每個群組各一個 session），請使用 `examples/line-router.ts` 將 webhook 分發到各 session 的 port。沒有這個中間層，只有一個 session 能收到訊息。
 - **Reply token 在 30 秒後失效。** Plugin 在每則訊息到達後的 30 秒內使用免費的 Reply API 回覆，之後改用需要扣配額的 Push API。若 Claude 回應超過 30 秒，該次回覆會消耗 Push API 配額。
 - **LINE 沒有訊息歷史 API。** 機器人只看得到它正在運行時收到的訊息。Claude Code 會自動在 state 目錄維護一個滾動的 `history.log`（`~/.claude/channels/line/history.log`）——可以指示 Claude 在啟動時讀取它，以在重啟後恢復對話脈絡。

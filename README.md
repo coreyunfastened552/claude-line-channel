@@ -188,6 +188,12 @@ LINE_CHANNEL_SECRET=<secret> bun examples/line-router.ts
 
 Things we discovered running this in production:
 
+- **`claude plugin install` uses SSH to clone from GitHub — set up HTTPS if you don't have SSH keys.**
+  This affects everyone without a GitHub SSH key configured (including fresh VPS setups). You'll see `Permission denied (publickey)` or `Host key verification failed`. Fix it before running `plugin install`:
+  ```bash
+  git config --global url."https://github.com/".insteadOf "git@github.com:"
+  ```
+
 - **LINE only allows one webhook URL per channel.** If you want multiple Claude Code sessions to share one LINE channel (e.g. one session per group), use `examples/line-router.ts` to fan out the webhook to each session's port. Without it, only one session receives messages.
 - **Reply tokens expire in 30 seconds.** The plugin uses the free Reply API for the first response after each inbound message, then falls back to the paid Push API. If Claude takes more than 30 s to respond, the reply costs Push API quota.
 - **LINE has no message history API.** The bot only sees messages that arrive while it is running. Claude Code automatically maintains a rolling `history.log` in the state directory (`~/.claude/channels/line/history.log`) — instruct Claude to read it on startup to restore context after a restart.
