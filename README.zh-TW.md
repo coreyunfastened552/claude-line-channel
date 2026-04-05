@@ -120,7 +120,7 @@ claude --dangerously-load-development-channels server:line
 }
 ```
 
-如何找到你的 LINE 用戶 ID：將機器人加為好友後傳任一訊息，查看 `~/.claude/channels/line/unknown-groups.log` — 你的用戶 ID 會在第一次傳訊時出現。將它加入 `allowFrom` 後再傳一次訊息即可。
+如何找到你的 LINE 用戶 ID：將機器人加為好友後傳任一訊息，查看 `~/.claude/channels/line/unknown-dms.log` — 你的用戶 ID 會在第一次傳訊時出現。將它加入 `allowFrom` 後再傳一次訊息即可。（未知的**群組** ID 則會寫入 `unknown-groups.log`。）
 
 > 步驟 5–7 假設你在一個專用目錄（`~/my-line-bot/`）執行 Claude。該目錄下的 `CLAUDE.md` 會在 session 啟動時自動載入。
 
@@ -335,9 +335,15 @@ done
 
 - Webhook 簽章以 **HMAC-SHA256** 驗證，使用 constant-time 比較（防 timing side-channel 攻擊）
 - `upload_file` 僅允許存取 inbox 目錄內的檔案 — 防止透過 LINE 訊息進行 prompt injection 攻擊，竊取任意檔案
-- 檔案上傳密碼使用 `crypto.randomBytes` 生成（96-bit 熵）
-- `.env` 在啟動時自動 chmod 為 `0600`
+- 檔案上傳密碼使用 `crypto.randomBytes` 生成（96-bit 熵），隨訊息直接傳給 Claude；channel 本身**不**儲存密碼
+- `.env` 在啟動時自動 chmod 為 `0600`；state 目錄 chmod 為 `0700`
 - 未知群組 ID 在記錄前會先清除控制字元
+- **HTTP 伺服器預設綁定 `127.0.0.1`** — 請在前面放 HTTPS 反向代理（nginx/caddy）。若要覆蓋請用 `LINE_BIND_HOST=0.0.0.0`，但請確保你知道自己在做什麼。
+- `access.json` 採 **fail-closed**：檔案格式錯誤時 server 會拒絕啟動；若在執行時無法讀取則全部訊息會被 drop（`dmPolicy=disabled`）直到修復。
+- 所有對外 HTTP 呼叫（LINE API、gofile）都有 30 秒 timeout；GitHub 版本檢查用 5 秒 timeout 且絕不阻塞啟動。
+- `reply` 與 `send_image` 僅接受實際傳過訊息的 `chat_id`（重啟後從 `history.log` 還原，上限 1000 筆）— 防止 prompt injection 讓 Claude 亂傳訊息給任意 LINE 使用者。
+- `get_content` 在把 `message_id` 插入 LINE URL 前會驗證是純數字、下載上限 100 MB、並 streaming 寫入磁碟（不會把整個 payload 載入記憶體）。
+- 寫入 `history.log` 的使用者內容會先 escape 換行符號，使訊息無法偽造 log entry 或對重啟後的 Claude 注入 prompt。
 
 ## 問題排查
 

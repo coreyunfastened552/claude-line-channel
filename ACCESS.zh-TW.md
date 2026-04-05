@@ -21,7 +21,7 @@ LINE channel 運行一個 webhook server 接收 LINE 訊息並轉發給 Claude C
 | 政策 | 行為 |
 |---|---|
 | `allowlist`（預設） | 靜默丟棄。只有 `allowFrom` 中的用戶可以聯繫機器人。 |
-| `disabled` | 丟棄所有訊息，包括 allowlist 中的用戶和群組。 |
+| `disabled` | **Kill switch**。丟棄來自所有來源的訊息（DM、群組、聊天室），不論 `allowFrom` 或 `groups` 是否有設定。適合快速停用機器人而不用改其他欄位。 |
 
 ## 尋找用戶 ID
 
@@ -29,7 +29,7 @@ LINE 用戶 ID 在 app 中不直接顯示。最簡單的方式：
 
 1. 將機器人加為好友。
 2. 傳任一訊息給機器人。
-3. 若該 ID 不在 allowlist 中，server 會將其記錄到 `$LINE_STATE_DIR/unknown-groups.log` — 查看該檔案即可找到 ID。
+3. 若該 ID 不在 allowlist 中，server 會將其記錄到 `$LINE_STATE_DIR/unknown-dms.log`（未知的群組/聊天室 ID 則記錄在 `unknown-groups.log`）— 查看該檔案即可找到 ID。
 4. 或使用 [LINE Developers Console](https://developers.line.biz/) → Messaging API → 你的頻道 → 查看 webhook log。
 
 ## access.json 格式

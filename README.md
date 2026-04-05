@@ -120,7 +120,7 @@ Create `~/.claude/channels/line/access.json`:
 }
 ```
 
-To find your LINE user ID: add the bot as a friend and send it any message. Check `~/.claude/channels/line/unknown-groups.log` — your user ID appears there on first contact. Add it to `allowFrom` and message again.
+To find your LINE user ID: add the bot as a friend and send it any message. Check `~/.claude/channels/line/unknown-dms.log` — your user ID appears there on first contact. Add it to `allowFrom` and message again. (Unknown **group** IDs go to `unknown-groups.log` instead.)
 
 > Steps 5–7 assume you run Claude from a dedicated directory (`~/my-line-bot/`). The `CLAUDE.md` in that directory is loaded automatically on session start.
 
@@ -335,9 +335,15 @@ Things we discovered running this in production:
 
 - Webhook signature verified with **HMAC-SHA256** using constant-time comparison (no timing side-channel)
 - `upload_file` is restricted to the inbox directory — prompt injection via LINE messages cannot cause arbitrary file exfiltration
-- File upload passwords generated with `crypto.randomBytes` (96-bit entropy)
-- `.env` file chmod'd to `0600` on startup
+- File upload passwords generated with `crypto.randomBytes` (96-bit entropy) and sent in-band to Claude; they are **not** persisted by the channel
+- `.env` file chmod'd to `0600` on startup; state directory chmod'd to `0700`
 - Unknown group IDs sanitized before logging
+- **HTTP server binds to `127.0.0.1` by default** — put an HTTPS reverse proxy (nginx/caddy) in front. Override with `LINE_BIND_HOST=0.0.0.0` only if you know what you're doing.
+- `access.json` is **fail-closed**: if the file is malformed, the server refuses to start; if it becomes unreadable at runtime, all messages are dropped (`dmPolicy=disabled`) until it is fixed.
+- All outbound HTTP calls (LINE API, gofile) have a 30 s timeout; GitHub version check uses a 5 s timeout and never blocks startup.
+- `reply` and `send_image` only accept `chat_id`s that have actually sent a message to the bot (restored from `history.log` on restart, bounded to 1000 recent chat_ids) — prevents prompt injection from directing Claude to message arbitrary LINE users.
+- `get_content` validates that `message_id` is numeric before interpolating into the LINE URL, caps downloads at 100 MB, and streams to disk (never holds the whole payload in memory).
+- Sender-controlled content written to `history.log` has newlines escaped so messages cannot forge log entries or inject prompts into a restarting Claude.
 
 ## Troubleshooting
 

@@ -71,8 +71,11 @@ function verifySignature(body: string, signature: string): boolean {
 
 // ---- Router ----------------------------------------------------------------
 
+const BIND_HOST = process.env.LINE_BIND_HOST ?? '127.0.0.1'
+
 Bun.serve({
   port: LISTEN_PORT,
+  hostname: BIND_HOST,
   async fetch(req) {
     const url = new URL(req.url)
     if (req.method !== 'POST' || url.pathname !== '/webhook') {
@@ -102,4 +105,4 @@ Bun.serve({
   },
 })
 
-process.stderr.write('line-router: listening on port ' + LISTEN_PORT + '\n')
+process.stderr.write('line-router: listening on ' + BIND_HOST + ':' + LISTEN_PORT + '\n')

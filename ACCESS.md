@@ -21,7 +21,7 @@ The LINE channel runs a webhook server that receives messages from LINE and forw
 | Policy | Behavior |
 |---|---|
 | `allowlist` (default) | Drop silently. Only users in `allowFrom` can reach the bot. |
-| `disabled` | Drop everything, including allowlisted users and groups. |
+| `disabled` | **Kill switch.** Drops every message from every source — DMs, groups, and rooms — regardless of `allowFrom` or `groups`. Use this to quickly disable the bot without editing other fields. |
 
 ## Finding user IDs
 
@@ -29,7 +29,7 @@ LINE user IDs are not directly visible in the app. The easiest way to find them:
 
 1. Add the bot as a friend on LINE.
 2. Send a message to the bot.
-3. The server logs the unknown userId to `$LINE_STATE_DIR/unknown-groups.log` if the ID is not in the allowlist — check that file.
+3. The server logs the unknown userId to `$LINE_STATE_DIR/unknown-dms.log` if the ID is not in the allowlist — check that file. (Unknown group/room IDs go to `unknown-groups.log` instead.)
 4. Alternatively, use the [LINE Developers Console](https://developers.line.biz/) → Messaging API → your channel → see incoming webhook logs.
 
 ## access.json schema
