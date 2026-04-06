@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [0.2.0] - 2026-04-06
 
 ### Added
+- **`fullAccess` config option in `access.json`** — controls whether `upload_file` is restricted to the inbox directory (`false`, default) or may access any file on the host (`true`). The MCP tool description and security instructions update dynamically based on this setting.
 - **Version check on startup.** The MCP server queries
   `https://api.github.com/repos/NYCU-Chung/claude-line-channel/releases/latest`
   on boot and prints a banner to stderr if the local version is out of date.

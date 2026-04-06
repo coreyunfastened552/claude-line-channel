@@ -48,7 +48,8 @@ LINE 用戶 ID 在 app 中不直接顯示。最簡單的方式：
   },
   "mentionPatterns": ["^hey claude\\b"],
   "textChunkLimit": 5000,
-  "chunkMode": "newline"
+  "chunkMode": "newline",
+  "fullAccess": false
 }
 ```
 
@@ -62,6 +63,7 @@ LINE 用戶 ID 在 app 中不直接顯示。最簡單的方式：
 | `mentionPatterns` | `string[]` | `[]` | 視為提及的 regex pattern（套用至訊息文字） |
 | `textChunkLimit` | `number` | `5000` | 每則 LINE 訊息的最大字元數 |
 | `chunkMode` | `"length"` \| `"newline"` | `"newline"` | 長訊息分段方式 |
+| `fullAccess` | `boolean` | `false` | `true` = `upload_file` 可存取主機上任意路徑；`false` = 僅限 inbox 目錄 |
 
 ### 群組政策欄位
 
